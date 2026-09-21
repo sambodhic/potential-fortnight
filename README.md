@@ -51,3 +51,11 @@ Submissions are reviewed by email and manually added to `laughing-fiesta/problem
 ## Offers to help
 
 Each problem detail includes an “I can help” form. It emails the offer, problem ID, title, and link to the same FormSubmit inbox. Offers do not change problem status or publish contact information. Review them manually, ask permission before sharing contacts, and connect suitable helpers with a local contact. Offers on fictional examples are clearly marked as demos. The existing FormSubmit activation is required for delivery.
+
+## Research candidates
+
+Open `research.html` or use the homepage’s Research candidates link. The preview and static build load `research/*/candidates.json` from the content repository. These appear in a separate directory with review status, sources, and notes, not in the main problem list. **Deploying this build makes these research records public**, even if the content repository is private. Include only information suitable for public viewing. Restart the preview server after updating `manage.py`.
+
+## Promote research into problems
+
+`python3 manage.py promote --candidate ID --id SLUG --category Water --summary 'Reviewed public text' --need 'A specific next step'` previews a conversion. Add `--write` to create the problem and archive the research entry. No local verification or deployment is implied. See [the step-by-step guide](../laughing-fiesta/PROMOTING.md). Restart an existing preview server after installing the updated loader so promoted candidates are hidden there.

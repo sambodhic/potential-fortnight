@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+from promote import promote, encode
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = Path(__file__).resolve().parent
@@ -33,13 +34,22 @@ def load_content():
         raise ValueError(f'Content folder not found: {CONTENT / "problems"}')
     return json.dumps(records, ensure_ascii=False).encode()
 
+def load_research():
+    records = []
+    for path in sorted((CONTENT / 'research').glob('*/candidates.json')):
+        batch = json.loads(path.read_text())
+        if not isinstance(batch, list):
+            raise ValueError(f'{path}: expected an array')
+        records.extend(record for record in batch if record.get('publicationStatus') != 'Promoted')
+    return json.dumps(records, ensure_ascii=False).encode()
+
 class Handler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(ROOT / 'site'), **kwargs)
     def do_GET(self):
-        if self.path.split('?')[0] == '/problems.json':
+        if self.path.split('?')[0] in ('/problems.json', '/research.json'):
             try:
-                body = load_content()
+                body = load_research() if self.path.split('?')[0] == '/research.json' else load_content()
             except (ValueError, OSError) as error:
                 self.send_error(500, str(error))
                 return
@@ -53,14 +63,34 @@ class Handler(SimpleHTTPRequestHandler):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=['serve', 'build', 'check'], nargs='?', default='serve')
+    parser.add_argument('command', choices=['serve', 'build', 'check', 'promote'], nargs='?', default='serve')
     parser.add_argument('--port', type=int, default=8000)
+    parser.add_argument('--candidate', help='Research candidate ID to promote')
+    parser.add_argument('--id', help='New stable problem ID, used in its filename and URL')
+    parser.add_argument('--category', help='Public problem category')
+    parser.add_argument('--summary', help='Reviewed public summary; also used as the initial description')
+    parser.add_argument('--need', action='append', help='Public next step or need; repeat for multiple needs')
+    parser.add_argument('--write', action='store_true', help='Write the promotion; otherwise preview only')
     args = parser.parse_args()
+    if args.command == 'promote':
+        if not all((args.candidate, args.id, args.category, args.summary, args.need)):
+            parser.error('promote requires --candidate, --id, --category, --summary and --need')
+        try:
+            load_content()
+            target, problem = promote(CONTENT, args.candidate, args.id, args.category,
+                                      args.summary, args.need, write=args.write)
+        except (ValueError, OSError, TypeError, KeyError) as error:
+            parser.exit(1, f'Promotion failed: {error}\n')
+        print(encode(problem))
+        print(f'Created {target}. Candidate archived; nothing deployed.' if args.write
+              else f'Preview only: would create {target}. Add --write to apply.')
+        raise SystemExit(0)
     data = load_content()
     if args.command == 'build':
         target = ROOT / 'dist'
         shutil.copytree(ROOT / 'site', target, dirs_exist_ok=True)
         (target / 'problems.json').write_bytes(data)
+        (target / 'research.json').write_bytes(load_research())
         print(f'Static site built at {target}')
     elif args.command == 'check':
         print(f'Validated {len(json.loads(data))} problem records.')
