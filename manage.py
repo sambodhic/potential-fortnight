@@ -36,11 +36,14 @@ def load_content():
 
 def load_research():
     records = []
-    for path in sorted((CONTENT / 'research').glob('*/candidates.json')):
+    for path in sorted((CONTENT / 'research').glob('candidates.json')):
         batch = json.loads(path.read_text())
         if not isinstance(batch, list):
             raise ValueError(f'{path}: expected an array')
         records.extend(record for record in batch if record.get('publicationStatus') != 'Promoted')
+    ids = [record['id'] for record in records]
+    if len(ids) != len(set(ids)):
+        raise ValueError('Duplicate research candidate IDs')
     return json.dumps(records, ensure_ascii=False).encode()
 
 class Handler(SimpleHTTPRequestHandler):
@@ -93,7 +96,7 @@ if __name__ == '__main__':
         (target / 'research.json').write_bytes(load_research())
         print(f'Static site built at {target}')
     elif args.command == 'check':
-        print(f'Validated {len(json.loads(data))} problem records.')
+        print(f'Validated {len(json.loads(data))} problem records and {len(json.loads(load_research()))} active research candidates.')
     else:
         server = ThreadingHTTPServer(('127.0.0.1', args.port), Handler)
         print(f'Unsolved is running at http://localhost:{args.port}', flush=True)

@@ -12,8 +12,8 @@ class PromotionTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         (self.root / 'problems').mkdir()
-        (self.root / 'research' / 'batch').mkdir(parents=True)
-        self.source = self.root / 'research' / 'batch' / 'candidates.json'
+        (self.root / 'research').mkdir()
+        self.source = self.root / 'research' / 'candidates.json'
         self.candidate = dict(id='candidate-001',title='Water needed',country='Example',location='School',
                               reportedScope='18 pupils',sources=[dict(url='https://example.org/report')],
                               reviewNotes='Internal notes',potentialContactOrganization='Unconfirmed contact',

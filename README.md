@@ -54,7 +54,7 @@ Each problem detail includes an “I can help” form. It emails the offer, prob
 
 ## Research candidates
 
-Open `research.html` or use the homepage’s Research candidates link. The preview and static build load `research/*/candidates.json` from the content repository. These appear in a separate directory with review status, sources, and notes, not in the main problem list. **Deploying this build makes these research records public**, even if the content repository is private. Include only information suitable for public viewing. Restart the preview server after updating `manage.py`.
+Open `research.html` or use the homepage’s Research candidates link. The preview and static build load `research/candidates.json` from the content repository. These appear in a separate directory with review status, sources, and notes, not in the main problem list. **Deploying this build makes these research records public**, even if the content repository is private. Include only information suitable for public viewing. Restart the preview server after updating `manage.py`.
 
 ## Promote research into problems
 

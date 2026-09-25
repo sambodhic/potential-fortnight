@@ -16,7 +16,7 @@ def promote(content, candidate_id, problem_id, category, summary, needs, write=F
     if not category.strip() or not summary.strip() or not needs or any(not n.strip() for n in needs):
         raise ValueError('Provide a category, public summary, and at least one nonempty --need.')
     matches = []
-    for path in sorted((content / 'research').glob('*/candidates.json')):
+    for path in sorted((content / 'research').glob('candidates.json')):
         batch = json.loads(path.read_text())
         for index, candidate in enumerate(batch):
             if candidate.get('id') == candidate_id:
