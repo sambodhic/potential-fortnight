@@ -59,3 +59,9 @@ Open `research.html` or use the homepage’s Research candidates link. The previ
 ## Promote research into problems
 
 `python3 manage.py promote --candidate ID --id SLUG --category Water --summary 'Reviewed public text' --need 'A specific next step'` previews a conversion. Add `--write` to create the problem and archive the research entry. No local verification or deployment is implied. See [the step-by-step guide](../laughing-fiesta/PROMOTING.md). Restart an existing preview server after installing the updated loader so promoted candidates are hidden there.
+
+## Research world map
+
+The research page includes country count pins, country filtering, drag-to-pan, zoom buttons, and an expanded dialog (Escape closes it). Search and review status update the pin counts; choosing a country keeps the other countries visible for comparison. Country pins are approximate locations, not individual issue coordinates. The map supports keyboard selection of pins and shares the existing light/dark theme.
+
+`site/world-map.json` contains locally hosted simplified country outlines and approximate country centers, derived from [Natural Earth country boundaries](https://github.com/datasets/geo-countries) (public domain). No map API key or external runtime map service is required. New country names without matching coordinates remain available in the country selector and are identified below the map.
