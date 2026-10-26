@@ -25,7 +25,7 @@ Open http://localhost:8000. JSON is read on each page refresh. Use `--port 8001`
 
 Copy `../laughing-fiesta/problem.template.json` into `../laughing-fiesta/problems/a-unique-name.json`, edit the fields, and refresh. Each record needs a unique ID. See the content repository README for field guidance. Search includes title, summary, location, country, category, and needs. Country and category filters populate automatically.
 
-The six included records are fictional examples, clearly labeled throughout. Remove `example-*.json` before a real launch and add researched records. Visitors can submit problems through the Add a problem form. Contact verification and fundraising are not implemented.
+The homepage leads into Reported needs, with live inventory totals, a research map and preview cards. Explore needs contains selected sourced records, each with its own verification status. The six fictional examples are archived in `../laughing-fiesta/examples/` and excluded from preview/build data. Visitors can submit problems through the Add a problem form. Contact verification and fundraising are not implemented.
 
 ## Validate and publish
 

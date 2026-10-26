@@ -15,12 +15,12 @@ function render() {
   const query = $('#search').value.trim().toLowerCase();
   const country = $('#country').value;
   const filtered = records.filter(p => (!category || p.category === category) && (!country || p.country === country) && [p.title, p.summary, p.country, p.location, p.category, ...p.needs].join(' ').toLowerCase().includes(query));
-  $('#result-count').textContent = `${filtered.length} ${filtered.length === 1 ? 'problem' : 'problems'}${category ? ` in ${category.toLowerCase()}` : ' to explore'}`;
+  $('#result-count').textContent = `${filtered.length} ${filtered.length === 1 ? 'need' : 'needs'}${category ? ` in ${category.toLowerCase()}` : ' to explore'}`;
   $('#clear').hidden = !query && !category && !country;
   $('#empty').hidden = filtered.length > 0;
   $('#problems').innerHTML = filtered.map(p => {
     const [icon, tint, accent] = styles[p.category] || ['↗', '#edf0e0', '#909c5d'];
-    return `<article class="card"><div class="card-top" style="--tint:${tint};--accent:${accent}"><span class="card-icon" aria-hidden="true">${icon}</span>${p.isExample ? '<span class="sample-tag">Illustrative example</span>' : ''}</div><div class="card-body"><div class="card-meta"><span>${e(p.category)}</span><span>${e(p.country)}</span></div><h3><a href="#problem/${encodeURIComponent(p.id)}">${e(p.title)}</a></h3><p class="card-summary">${e(p.summary)}</p><div class="needs">${p.needs.slice(0, 3).map(n => `<span class="need">${e(n)}</span>`).join('')}</div><div class="card-bottom"><span>${e(p.isExample ? 'Example · not verified' : p.status)}</span><a href="#problem/${encodeURIComponent(p.id)}" aria-label="Explore ${e(p.title)}">Explore problem ↗</a></div></div></article>`;
+    return `<article class="card"><div class="card-top" style="--tint:${tint};--accent:${accent}"><span class="card-icon" aria-hidden="true">${icon}</span>${p.isExample ? '<span class="sample-tag">Illustrative example</span>' : ''}</div><div class="card-body"><div class="card-meta"><span>${e(p.category)}</span><span>${e(p.country)}</span></div><h3><a href="#problem/${encodeURIComponent(p.id)}">${e(p.title)}</a></h3><p class="card-summary">${e(p.summary)}</p><div class="needs">${p.needs.slice(0, 3).map(n => `<span class="need">${e(n)}</span>`).join('')}</div><div class="card-bottom"><span>${e(p.isExample ? 'Example · not verified' : p.status)}</span><a href="#problem/${encodeURIComponent(p.id)}" aria-label="Explore ${e(p.title)}">Explore need ↗</a></div></div></article>`;
   }).join('');
   document.querySelectorAll('.category').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.category === category)));
 }
@@ -32,7 +32,7 @@ function openFromHash() {
   try { id = decodeURIComponent(location.hash.slice(9)); } catch { id = ''; }
   const p = records.find(record => record.id === id);
   if (!p) { show('<h2>Problem not found</h2><p>This record may have moved or been removed. Close this window to explore other problems.</p>'); return; }
-  show(`<p class="eyebrow">${e(p.category)} · ${e(p.country)}</p><h2>${e(p.title)}</h2><span class="detail-label">${e(p.isExample ? 'Illustrative example · not verified' : p.status)}</span><p style="margin-top:20px">${e(p.description || p.summary)}</p><h3>Where it happens</h3><p>${e(p.location)}, ${e(p.country)}</p><h3>Who it affects</h3><p>${e(p.affected || 'Not yet documented.')}</p><section class="help-needs"><h3>What’s needed</h3><ul>${p.needs.map(need => `<li>${e(need)}</li>`).join('')}</ul><button class="button primary" id="offer-help">I can help ↗</button></section><h3>Local contact</h3><p>${e(p.contact || 'A local contact has not yet been verified.')}</p><h3>Evidence & sources</h3>${p.sources.length ? `<ul>${p.sources.map(source => `<li><a href="${e(source.url)}" target="_blank" rel="noopener noreferrer">${e(source.label)} ↗</a></li>`).join('')}</ul>` : '<p>No sources yet. This example is for demonstrating the format only.</p>'}<h3>Last verified</h3><p>${e(p.lastVerified || 'Not yet verified')}</p>${p.isExample ? '<p class="sample-notice">This is a fictional sample, not a real project seeking help. Replace it with sourced information before publishing your directory.</p>' : ''}<button class="button" id="copy-link">Copy link ↗</button>`);
+  show(`<p class="eyebrow">${e(p.category)} · ${e(p.country)}</p><h2>${e(p.title)}</h2><span class="detail-label">${e(p.isExample ? 'Illustrative example · not verified' : p.status)}</span><p style="margin-top:20px">${e(p.description || p.summary)}</p><h3>Where it happens</h3><p>${e(p.location)}, ${e(p.country)}</p><h3>Who it affects</h3><p>${e(p.affected || 'Not yet documented.')}</p><section class="help-needs"><h3>What’s needed</h3><ul>${p.needs.map(need => `<li>${e(need)}</li>`).join('')}</ul><button class="button primary" id="offer-help">I can help ↗</button></section><h3>Local contact</h3><p>${e(p.contact || 'A local contact has not yet been verified.')}</p><h3>Evidence & sources</h3>${p.sources.length ? `<ul>${p.sources.map(source => `<li><a href="${e(source.url)}" target="_blank" rel="noopener noreferrer">${e(source.label)} ↗</a></li>`).join('')}</ul>` : '<p>No sources have been added yet.</p>'}${p.reportedAt ? `<h3>Report date</h3><p>${e(p.reportedAt)} · Current conditions still need checking.</p>` : ''}<h3>Last verified</h3><p>${e(p.lastVerified || 'Not yet verified')}</p>${p.isExample ? '<p class="sample-notice">This is a fictional sample, not a real project seeking help. Replace it with sourced information before publishing your directory.</p>' : ''}<button class="button" id="copy-link">Copy link ↗</button>`);
   $('#offer-help').addEventListener('click', () => openHelpForm(p));
   $('#copy-link').addEventListener('click', async event => {
     try { await navigator.clipboard.writeText(location.href); event.target.textContent = 'Link copied ✓'; }
@@ -153,9 +153,29 @@ async function init() {
     const countries = [...new Set(records.map(p => p.country))].sort();
     $('#country').innerHTML += countries.map(c => `<option value="${e(c)}">${e(c)}</option>`).join('');
     const categories = [...new Set(records.map(p => p.category))].sort();
-    $('#categories').innerHTML = ['', ...categories].map(c => `<button class="category" data-category="${e(c)}" aria-pressed="${!c}">${c ? `${styles[c]?.[0] || '↗'} &nbsp;${e(c)}` : 'All problems'}</button>`).join('');
-    $('.sample-notice').hidden = !records.some(p => p.isExample);
+    $('#categories').innerHTML = ['', ...categories].map(c => `<button class="category" data-category="${e(c)}" aria-pressed="${!c}">${c ? `${styles[c]?.[0] || '↗'} &nbsp;${e(c)}` : 'All needs'}</button>`).join('');
+    $('.sample-notice').hidden = false;
     render(); openFromHash();
   } catch (error) { $('#result-count').textContent = 'Problems unavailable'; $('#error').hidden = false; console.error(error); }
 }
-init();
+init().finally(loadResearchPreview);
+
+let reportedNeeds = [];
+const homepageMap = setupIssueMap({getCandidates:()=>reportedNeeds,setCountry:value=>{location.href=value?`research.html?country=${encodeURIComponent(value)}`:'research.html';}});
+async function loadResearchPreview() {
+  try {
+    const response = await fetch('research.json');
+    if (!response.ok) throw Error('Research unavailable');
+    reportedNeeds = await response.json();
+    homepageMap.render();
+    const needs = [...reportedNeeds, ...records];
+    $('#reported-total').textContent = `${needs.length} reported needs across ${new Set(needs.map(p=>p.country)).size} countries`;
+    const preview = reportedNeeds.filter(p=>p.screening==='Priority follow-up').slice(0,3);
+    const selected = preview.length ? preview : reportedNeeds.slice(0,3);
+    $('#research-preview').innerHTML=selected.map(p=>`<article class="card research-card"><div class="card-body"><div class="card-meta"><span>${e(p.region)}</span><span>${e(p.country)}</span></div><p class="research-status">Needs verification</p><h2><a href="research.html?country=${encodeURIComponent(p.country)}#${encodeURIComponent(p.id)}">${e(p.title)}</a></h2><p>${e(p.location)}</p><p>${e(p.nextStep)}</p><a class="text-button" href="research.html?country=${encodeURIComponent(p.country)}#${encodeURIComponent(p.id)}">Review sources & open questions ↗</a></div></article>`).join('');
+    if(!selected.length) {$('#research-preview-message').hidden=false;$('#research-preview-message').innerHTML='Explore the selected needs below while we research more reports.';}
+  } catch(error) {
+    $('#reported-total').textContent='Explore the reports and help check what is still needed.';
+    $('#research-preview-message').hidden=false;
+  }
+}
