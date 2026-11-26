@@ -11,6 +11,22 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 ROOT = Path(__file__).resolve().parent
 CONTENT = Path(os.environ.get('CONTENT_DIR', ROOT.parent / 'laughing-fiesta')).resolve()
 
+# Only explicitly public fields may cross from the private content repository.
+PROBLEM_FIELDS = ('id', 'title', 'summary', 'description', 'country', 'location',
+                  'category', 'categories', 'status', 'needs', 'affected', 'sources',
+                  'lastVerified', 'isExample', 'reportedAt', 'sourceCandidateId')
+RESEARCH_FIELDS = ('id', 'title', 'country', 'region', 'location', 'category',
+                   'categories', 'reportedScope', 'nextStep', 'verificationStatus',
+                   'lastVerified', 'researchDate')
+
+def public_record(record, fields):
+    result = {key: record[key] for key in fields if key in record}
+    result['sources'] = [
+        {key: source[key] for key in ('label', 'url', 'publishedOrUpdated') if key in source}
+        for source in record.get('sources', [])
+    ]
+    return result
+
 def load_content():
     records = []
     ids = set()
@@ -29,7 +45,7 @@ def load_content():
         if not isinstance(record['sources'], list) or not all(isinstance(s, dict) and isinstance(s.get('label'), str) and isinstance(s.get('url'), str) and s['url'].startswith(('https://', 'http://')) for s in record['sources']):
             raise ValueError(f'{path.name}: sources need a label and HTTP(S) url')
         ids.add(record['id'])
-        records.append(record)
+        records.append(public_record(record, PROBLEM_FIELDS))
     if not (CONTENT / 'problems').is_dir():
         raise ValueError(f'Content folder not found: {CONTENT / "problems"}')
     return json.dumps(records, ensure_ascii=False).encode()
@@ -44,7 +60,7 @@ def load_research():
     ids = [record['id'] for record in records]
     if len(ids) != len(set(ids)):
         raise ValueError('Duplicate research candidate IDs')
-    return json.dumps(records, ensure_ascii=False).encode()
+    return json.dumps([public_record(record, RESEARCH_FIELDS) for record in records], ensure_ascii=False).encode()
 
 class Handler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
@@ -91,7 +107,10 @@ if __name__ == '__main__':
     data = load_content()
     if args.command == 'build':
         target = ROOT / 'dist'
-        shutil.copytree(ROOT / 'site', target, dirs_exist_ok=True)
+        if target.exists():
+            shutil.rmtree(target)
+        shutil.copytree(ROOT / 'site', target, ignore=shutil.ignore_patterns(
+            '.*', '*.pem', '*.key', '*.bak', '*.tmp', '__pycache__'))
         (target / 'problems.json').write_bytes(data)
         (target / 'research.json').write_bytes(load_research())
         print(f'Static site built at {target}')

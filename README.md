@@ -27,7 +27,7 @@ Copy `../laughing-fiesta/problem.template.json` into `../laughing-fiesta/problem
 
 The homepage keeps the tilted introduction card and an interactive world map above the needs filters. Map pins use the deduplicated unified inventory, follow search and topic filters, and select the same country filter as the list.
 
-The homepage has one Needs list combining sourced directory records and research reports, with shared search, country, and category filters. Cards show topic categories and a separate amber Unverified indicator when current conditions have not been verified; source provenance remains in the details. Open a need to see its verification status, evidence, review notes, and offer-help form. Research reports without editorial categories are classified from their titles into relevant topics independently of verification. A need can appear under multiple topic filters; explicit categories take precedence, with Infrastructure as a fallback for ambiguous titles. The list loads 24 cards at a time with Show more; source files remain separate and unchanged. Reports already represented by a directory record's `sourceCandidateId`, and archived promoted reports, are excluded to avoid duplicates. If one source fails, the other remains browsable with a partial-load notice.
+The homepage has one Needs list combining sourced directory records and research reports, with shared search, country, and category filters. Cards show topic categories and a separate amber Unverified indicator when current conditions have not been verified; source provenance remains in the details. Open a need to see its verification status, evidence and offer-help form. Research reports without editorial categories are classified from their titles into relevant topics independently of verification. A need can appear under multiple topic filters; explicit categories take precedence, with Infrastructure as a fallback for ambiguous titles. The list loads 24 cards at a time with Show more; source files remain separate and unchanged. Reports already represented by a directory record's `sourceCandidateId`, and archived promoted reports, are excluded to avoid duplicates. If one source fails, the other remains browsable with a partial-load notice.
 
 Visitors can share needs through the submission form. The six fictional examples remain archived in `../laughing-fiesta/examples/` and excluded from preview/build data. Contact verification and payments are not implemented.
 
@@ -58,7 +58,9 @@ Each problem detail includes an “I can help” form. It emails the offer, prob
 
 ## Research candidates
 
-Open `research.html` or use the homepage’s Research candidates link. The preview and static build load `research/candidates.json` from the content repository. These appear in a separate directory with review status, sources, and notes, not in the main problem list. **Deploying this build makes these research records public**, even if the content repository is private. Include only information suitable for public viewing. Restart the preview server after updating `manage.py`.
+The main Needs list and the optional `research.html` view use a public projection of `research/candidates.json`. Both local preview and static builds allow only public listing fields and source links. Internal review notes, screening decisions, unconfirmed organizations/contact routes, reported cost notes, source-access notes, contact details, and unknown fields are excluded. The original data stays in the content repository. Public titles, locations, scope, next steps, dates, verification status, and source links are downloadable by visitors. Restart the preview server after changing `manage.py`.
+
+The build recreates `dist/` to remove stale files. Keep private files and credentials outside `site/`. `dist/`, local environment files, and common credential files are ignored by Git.
 
 ## Promote research into problems
 

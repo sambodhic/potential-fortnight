@@ -25,7 +25,7 @@ function renderMap() {
   if (!mapData) return;
   const query = getQuery().trim().toLowerCase();
   const counts = new Map();
-  getCandidates().filter(p => matchesNeed ? matchesNeed(p) : (!getStatus() || (p.screening || '').startsWith(getStatus())) && [p.country,p.location,p.title,p.potentialContactOrganization,p.region].join(' ').toLowerCase().includes(query)).forEach(p => counts.set(p.country, (counts.get(p.country)||0)+1));
+  getCandidates().filter(p => matchesNeed ? matchesNeed(p) : (!getStatus() || (p.verificationStatus || 'Needs verification').startsWith(getStatus())) && [p.country,p.location,p.title,p.region].join(' ').toLowerCase().includes(query)).forEach(p => counts.set(p.country, (counts.get(p.country)||0)+1));
   const pins = document.querySelector('#map-pins');
   pins.replaceChildren();
   const missing = [];

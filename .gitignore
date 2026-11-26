@@ -1,3 +1,22 @@
 dist/
 __pycache__/
 .DS_Store
+
+# Local credentials, tooling state, and accidental content copies
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+.aws/
+.codex/
+.agents/
+.venv/
+.pytest_cache/
+*.log
+/site/problems.json
+/site/research.json
+/laughing-fiesta/
+/content/
