@@ -1,4 +1,4 @@
-function setupIssueMap({getCandidates,getQuery=()=>'',getStatus=()=>'',getCountry=()=>'',setCountry}) {
+function setupIssueMap({getCandidates,getQuery=()=>'',getStatus=()=>'',getCountry=()=>'',matchesNeed=null,setCountry}) {
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 const mapPanel = document.querySelector('.issue-map');
@@ -25,7 +25,7 @@ function renderMap() {
   if (!mapData) return;
   const query = getQuery().trim().toLowerCase();
   const counts = new Map();
-  getCandidates().filter(p => (!getStatus() || p.screening.startsWith(getStatus())) && [p.country,p.location,p.title,p.potentialContactOrganization,p.region].join(' ').toLowerCase().includes(query)).forEach(p => counts.set(p.country, (counts.get(p.country)||0)+1));
+  getCandidates().filter(p => matchesNeed ? matchesNeed(p) : (!getStatus() || (p.screening || '').startsWith(getStatus())) && [p.country,p.location,p.title,p.potentialContactOrganization,p.region].join(' ').toLowerCase().includes(query)).forEach(p => counts.set(p.country, (counts.get(p.country)||0)+1));
   const pins = document.querySelector('#map-pins');
   pins.replaceChildren();
   const missing = [];
@@ -39,9 +39,9 @@ function renderMap() {
     pin.dataset.y = (90-lat)*2;
     pin.setAttribute('role','button');
     pin.setAttribute('tabindex','0');
-    pin.setAttribute('aria-label',`${name}: ${count} ${count===1?'issue':'issues'}. Filter by ${name}`);
+    pin.setAttribute('aria-label',`${name}: ${count} ${count===1?'need':'needs'}. Filter by ${name}`);
     pin.setAttribute('aria-pressed',String(getCountry()===name));
-    pin.innerHTML = `<title>${escape(name)}: ${count} ${count===1?'issue':'issues'}</title><circle r="10"/><text text-anchor="middle" dy=".35em">${count}</text>`;
+    pin.innerHTML = `<title>${escape(name)}: ${count} ${count===1?'need':'needs'}</title><circle r="10"/><text text-anchor="middle" dy=".35em">${count}</text>`;
     const select = () => setCountry(getCountry()===name?'':name);
     pin.addEventListener('click', () => {if (!mapDragged) select();});
     pin.addEventListener('keydown', event => {if (event.key==='Enter'||event.key===' ') {event.preventDefault();select();}});
@@ -50,7 +50,7 @@ function renderMap() {
   // Keep the selected country's pin above neighbors.
   const selected = pins.querySelector('[aria-pressed="true"]');
   if (selected) pins.append(selected);
-  document.querySelector('#map-summary').textContent = getCountry() ? `${getCountry()} selected · click again to clear` : `${[...counts.values()].reduce((a,b)=>a+b,0)} issues · ${counts.size} countries`;
+  document.querySelector('#map-summary').textContent = getCountry() ? `${getCountry()} selected · click again to clear` : `${[...counts.values()].reduce((a,b)=>a+b,0)} needs · ${counts.size} countries`;
   const unmapped = document.querySelector('#map-unmapped');
   unmapped.hidden = !missing.length;
   unmapped.textContent = `Available in the country filter: ${missing.join(', ')}`;
