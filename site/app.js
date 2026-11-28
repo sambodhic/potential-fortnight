@@ -85,7 +85,7 @@ function openSubmissionForm() {
       <label>Tell us more<textarea name="description" rows="4" minlength="20" maxlength="6000" placeholder="What is happening, who is affected, and what help is needed?" required></textarea></label>
       <label>Source or reference link <span class="optional">(optional)</span><input name="source" type="url" placeholder="https://" maxlength="2000"></label>
       <div class="form-trap" aria-hidden="true"><label>Leave this blank<input name="_honey" tabindex="-1" autocomplete="off"></label></div>
-      <p class="form-note">Your submission will be sent to <a href="mailto:problems@unsolved.fyi">problems@unsolved.fyi</a> via FormSubmit for review. Your email is only for follow-up and won’t be published.</p>
+      <p class="form-note">Your submission will be sent to <a href="mailto:problems@unsolved.fyi">problems@unsolved.fyi</a> via FormSubmit for review. See our <a href="privacy.html">privacy page</a>. Your email is only for follow-up and won’t be published.</p>
       <p id="submission-error" class="form-error" role="alert" hidden></p>
       <button class="button primary" type="submit">Submit problem <span aria-hidden="true">↗</span></button>
       <span id="submission-status" class="form-note" role="status" aria-live="polite"></span>
@@ -104,7 +104,7 @@ function openHelpForm(problem) {
       <label>Where can you help?<select name="availability" required><option value="">Choose an option</option><option>I’m nearby</option><option>I can help remotely</option><option>Both locally and remotely</option></select></label>
       <label>Your offer<textarea name="message" rows="4" maxlength="4000" required placeholder="What could you offer? Share any relevant experience or availability."></textarea></label>
       <div class="form-trap" aria-hidden="true"><label>Leave this blank<input name="_honey" tabindex="-1" autocomplete="off"></label></div>
-      <p class="form-note">Your offer will be sent to <a href="mailto:problems@unsolved.fyi">problems@unsolved.fyi</a> via FormSubmit. We’ll contact you about next steps and ask before sharing your contact details.</p>
+      <p class="form-note">Your offer will be sent to <a href="mailto:problems@unsolved.fyi">problems@unsolved.fyi</a> via FormSubmit. See our <a href="privacy.html">privacy page</a>. We’ll contact you about next steps and ask before sharing your contact details.</p>
       <p id="submission-error" class="form-error" role="alert" hidden></p>
       <div class="form-actions"><button class="button primary" type="submit">Send offer ↗</button><button class="button" type="button" id="back-to-problem">Back to problem</button></div>
       <span id="submission-status" class="form-note" role="status" aria-live="polite"></span>

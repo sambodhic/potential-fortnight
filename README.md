@@ -40,7 +40,7 @@ python3 manage.py build
 
 Publish the generated `dist/` folder to any static host. Build with both repositories checked out; the resulting website is self-contained. Rebuild after changing JSON. Do not publish the raw repository as the site root. Problem links use `#problem/ID`, requiring no routing configuration.
 
-No analytics, accounts, or backend database. Only publish contact details you have permission to share.
+Optional opt-in Google Analytics; no accounts or backend database. Only publish contact details you have permission to share.
 
 ## Submission email setup
 
@@ -71,3 +71,13 @@ The build recreates `dist/` to remove stale files. Keep private files and creden
 The research page includes country count pins, country filtering, drag-to-pan, zoom buttons, and an expanded dialog (Escape closes it). Search and review status update the pin counts; choosing a country keeps the other countries visible for comparison. Country pins are approximate locations, not individual issue coordinates. The map supports keyboard selection of pins and shares the existing light/dark theme.
 
 `site/world-map.json` contains locally hosted simplified country outlines and approximate country centers, derived from [Natural Earth country boundaries](https://github.com/datasets/geo-countries) (public domain). No map API key or external runtime map service is required. New country names without matching coordinates remain available in the country selector and are identified below the map.
+
+## Privacy and Google Analytics
+
+`site/privacy.html` describes forms, public listings, browser storage, fonts, and optional analytics. Privacy and analytics preference links appear on every page and form notices link to the policy.
+
+Set `window.UNSOLVED_ANALYTICS_ID` in `site/analytics-config.js` to your public GA4 web-stream measurement ID (`G-...`), then rebuild and deploy. An empty ID keeps analytics disabled and hides the initial prompt. No Google Analytics script loads until a visitor opts in. Preferences can be changed from the footer or privacy page; declining stops collection and reloads if the tag was already loaded. Choices persist in local storage when available.
+
+**GA4 setup:** disable Enhanced Measurement for this web stream (including form interactions, site search, and browser-history page views) to keep collection limited to the explicit page views in this hook. Leave user-provided data collection off. The hook strips query strings and fragments, omits referrers, and disables advertising signals and personalization. See [Google configuration reference](https://developers.google.com/analytics/devguides/collection/ga4/reference/config) and [page-view documentation](https://developers.google.com/analytics/devguides/collection/ga4/views).
+
+Verify in the hosted site's browser network panel and GA4 Realtime: no tag request before consent or after declining; one page view after allowing and on each subsequent page load. Test preference withdrawal and navigation across all three pages. Ad blockers may prevent delivery. The measurement ID and GA4 property settings must be supplied before live collection can be verified.
